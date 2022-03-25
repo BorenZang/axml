@@ -86,7 +86,6 @@ public class ArscParser implements ResConst {
             D("[%08x]type: %04x, headsize: %04x, size:%08x", location, type, headSize, size);
         }
     }
-
     private static void D(String fmt, Object... args) {
         if (logger.isTraceEnabled()) {
             logger.trace(String.format(fmt, args));
@@ -113,6 +112,11 @@ public class ArscParser implements ResConst {
     private List<Pkg> pkgs = new ArrayList<Pkg>();
     private String[] strings;
     private String[] typeNamesX;
+    int typeStringOff;
+    int lastPublicType;
+    int keyStringOff;
+    int lastPublicKey;
+    int typeIDOffset;
 
     public ArscParser(byte[] b) {
         this.in = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN);
@@ -143,6 +147,7 @@ public class ArscParser implements ResConst {
             }
             in.position(chunk.location + chunk.size);
         }
+        int a = fileSize;
         return pkgs;
     }
 
@@ -225,6 +230,7 @@ public class ArscParser implements ResConst {
 
     private void readPackage(ByteBuffer in) throws IOException {
         int pid = in.getInt() % 0xFF;
+//        int a = in.getInt();
 
         String name;
         {
@@ -245,10 +251,11 @@ public class ArscParser implements ResConst {
         pkg = new Pkg(pid, name);
         pkgs.add(pkg);
 
-        int typeStringOff = in.getInt();
-        int typeNameCount = in.getInt();
-        int keyStringOff = in.getInt();
-        int specNameCount = in.getInt();
+        typeStringOff = in.getInt();
+        lastPublicType = in.getInt();
+        keyStringOff = in.getInt();
+        lastPublicKey = in.getInt();
+        typeIDOffset = in.getInt();
 
         {
             Chunk chunk = new Chunk();

@@ -87,6 +87,9 @@ public class StringItems extends ArrayList<StringItem> {
 
 	public void prepare() throws IOException {
 		for (StringItem s : this) {
+			if (s == null) {
+				continue;
+			}
 			if (s.data.length() > 0x7FFF) {
 				useUTF8 = false;
 			}
@@ -97,6 +100,9 @@ public class StringItems extends ArrayList<StringItem> {
 		baos.reset();
 		Map<String, Integer> map = new HashMap<String, Integer>();
 		for (StringItem item : this) {
+			if (item == null) {
+				item = new StringItem("empty");
+			}
 			item.index = i++;
 			String stringData = item.data;
 			Integer of = map.get(stringData);
@@ -155,6 +161,10 @@ public class StringItems extends ArrayList<StringItem> {
 		out.putInt(7 * 4 + this.size() * 4);
 		out.putInt(0);
 		for (StringItem item : this) {
+			if (item == null) {
+				out.putInt(0);
+				continue;
+			}
 			out.putInt(item.dataOffset);
 		}
 		out.put(stringData);

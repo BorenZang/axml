@@ -92,7 +92,8 @@ public class ArscWriter implements ResConst {
             return;
         }
         byte[] data = Util.readFile(new File(args[0]));
-        List<Pkg> pkgs = new ArscParser(data).parse();
+        ArscParser parser = new ArscParser(data);
+        List<Pkg> pkgs = parser.parse();
         // ArscDumper.dump(pkgs);
         byte[] data2 = new ArscWriter(pkgs).toByteArray();
         // ArscDumper.dump(new ArscParser(data2).parse());
@@ -124,7 +125,7 @@ public class ArscWriter implements ResConst {
             ctx.offset = size;
             int pkgSize = 0;
             pkgSize += 8 + 4 + 256;// chunk,pid+name
-            pkgSize += 4 * 4;
+            pkgSize += 5 * 4;
 
             ctx.typeStringOff = pkgSize;
             {
@@ -158,10 +159,10 @@ public class ArscWriter implements ResConst {
                     if (size0 % 4 != 0) {
                         size0 += 4 - size0 % 4;
                     }
-                    pkgSize += size0;// config
+//                    pkgSize += size0;// config
 
                     if (pkgSize - configBasePostion > 0x0038) {
-                        throw new RuntimeException("config id  too big");
+                         throw new RuntimeException("config id  too big");
                     } else {
                         pkgSize = configBasePostion + 0x0038;
                     }
@@ -273,6 +274,7 @@ public class ArscWriter implements ResConst {
 
             out.putInt(pctx.keyStringOff);
             out.putInt(pctx.keyNames0.size());
+            out.putInt(0);
 
             {
                 if (out.position() - basePosition != pctx.typeStringOff) {
@@ -352,7 +354,6 @@ public class ArscWriter implements ResConst {
                             out.putInt(entry.wOffset);
                         }
                     }
-
                     if (out.position() - typeConfigPosition != config.wEntryStart) {
                         throw new RuntimeException();
                     }
