@@ -111,6 +111,7 @@ public class ArscParser implements ResConst {
     private Pkg pkg;
     private List<Pkg> pkgs = new ArrayList<Pkg>();
     private String[] strings;
+    private int flags;
     private String[] typeNamesX;
     int typeStringOff;
     int lastPublicType;
@@ -135,7 +136,9 @@ public class ArscParser implements ResConst {
             Chunk chunk = new Chunk();
             switch (chunk.type) {
             case RES_STRING_POOL_TYPE:
-                strings = StringItems.read(in);
+                int[] flags = {0};
+                strings = StringItems.read(in, flags);
+                this.flags = flags[0];
                 if (logger.isTraceEnabled()) {
                     for (int i = 0; i < strings.length; i++) {
                         D("STR [%08x] %s", i, strings[i]);
@@ -147,7 +150,6 @@ public class ArscParser implements ResConst {
             }
             in.position(chunk.location + chunk.size);
         }
-        int a = fileSize;
         return pkgs;
     }
 
@@ -230,11 +232,10 @@ public class ArscParser implements ResConst {
 
     private void readPackage(ByteBuffer in) throws IOException {
         int pid = in.getInt() % 0xFF;
-//        int a = in.getInt();
 
         String name;
         {
-            int nextPisition = in.position() + 128 * 2;
+            int nextPosition = in.position() + 128 * 2;
             StringBuilder sb = new StringBuilder(32);
             for (int i = 0; i < 128; i++) {
                 int s = in.getShort();
@@ -245,10 +246,10 @@ public class ArscParser implements ResConst {
                 }
             }
             name = sb.toString();
-            in.position(nextPisition);
+            in.position(nextPosition);
         }
 
-        pkg = new Pkg(pid, name);
+        pkg = new Pkg(pid, name, flags);
         pkgs.add(pkg);
 
         typeStringOff = in.getInt();
@@ -262,7 +263,9 @@ public class ArscParser implements ResConst {
             if (chunk.type != RES_STRING_POOL_TYPE) {
                 throw new RuntimeException();
             }
-            typeNamesX = StringItems.read(in);
+            int[] flags = new int[1];
+            typeNamesX = StringItems.read(in, flags);
+            pkg.typeNameXFlags = flags[0];
             in.position(chunk.location + chunk.size);
         }
         {
@@ -270,7 +273,9 @@ public class ArscParser implements ResConst {
             if (chunk.type != RES_STRING_POOL_TYPE) {
                 throw new RuntimeException();
             }
-            keyNamesX = StringItems.read(in);
+            int[] flags = new int[1];
+            keyNamesX = StringItems.read(in, flags);
+            pkg.keyNamesXFlags = flags[0];
             if (logger.isTraceEnabled()) {
                 for (int i = 0; i < keyNamesX.length; i++) {
                     D("STR [%08x] %s", i, keyNamesX[i]);

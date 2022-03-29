@@ -21,11 +21,15 @@ public class Pkg {
     public final int id;
     public String name;
     public TreeMap<Integer, Type> types = new TreeMap<Integer, Type>();
+    public int flags;
+    public int typeNameXFlags;
+    public int keyNamesXFlags;
 
-    public Pkg(int id, String name) {
+    public Pkg(int id, String name, int flags) {
         super();
         this.id = id;
         this.name = name;
+        this.flags = flags;
     }
 
     public Type getType(int tid, String name, int entrySize) {

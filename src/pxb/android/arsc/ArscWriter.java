@@ -212,11 +212,11 @@ public class ArscWriter implements ResConst {
                     }
                 }
             }
-            ctx.keyNames0.prepare();
+            ctx.keyNames0.prepare(pkg.keyNamesXFlags);
             ctx.typeNames0.addAll(ctx.typeNames);
-            ctx.typeNames0.prepare();
+            ctx.typeNames0.prepare(pkg.typeNameXFlags);
         }
-        strTable0.prepare();
+        strTable0.prepare(0x100);
         return ctxs;
     }
 

@@ -24,14 +24,20 @@ import java.util.Map;
 
 @SuppressWarnings("serial")
 public class StringItems extends ArrayList<StringItem> {
-	private static final int UTF8_FLAG = 0x00000100;
+	public static final int UTF8_FLAG = 0x00000100;
 
-	
-    public static String[] read(ByteBuffer in) throws IOException {
+	public static String[] read(ByteBuffer in) throws IOException {
+		return read(in, null);
+	}
+
+	public static String[] read(ByteBuffer in, int[] flag) throws IOException {
         int trunkOffset = in.position() - 8;
         int stringCount = in.getInt();
-        int styleOffsetCount = in.getInt();
+        int styleCount = in.getInt();
         int flags = in.getInt();
+		if (flag != null) {
+			flag[0] = flags;
+		}
         int stringDataOffset = in.getInt();
         int stylesOffset = in.getInt();
         int offsets[] = new int[stringCount];
@@ -86,11 +92,11 @@ public class StringItems extends ArrayList<StringItem> {
 	}
 
 	public void prepare() throws IOException {
-		for (StringItem s : this) {
-			if (s != null && s.data.length() > 0x7FFF) {
-				useUTF8 = false;
-			}
-		}
+		prepare(0);
+	}
+
+	public void prepare(int flags) throws IOException {
+		useUTF8 = (flags & StringItems.UTF8_FLAG) != 0;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int i = 0;
 		int offset = 0;
@@ -99,6 +105,7 @@ public class StringItems extends ArrayList<StringItem> {
 		for (StringItem item : this) {
 			if (item == null) {
 				i++;
+				offset += 10;
 				continue;
 			}
 			item.index = i++;
