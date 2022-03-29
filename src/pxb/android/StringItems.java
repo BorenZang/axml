@@ -116,13 +116,13 @@ public class StringItems extends ArrayList<StringItem> {
 
 					if (length > 0x7F) {
 						offset++;
-						baos.write((length >> 8) & 0x80);
+						baos.write((length >> 8) | 0x80);
 					}
 					baos.write(length);
 
 					if (u8length > 0x7F) {
 						offset++;
-						baos.write((u8length >> 8) & 0x80);
+						baos.write((u8length >> 8) | 0x80);
 					}
 					baos.write(u8length);
 					baos.write(data);
@@ -132,7 +132,7 @@ public class StringItems extends ArrayList<StringItem> {
 					int length = stringData.length();
 					byte[] data = stringData.getBytes("UTF-16LE");
 					if (length > 0x7FFF) {
-						int x = (length >> 16) & 0x8000;
+						int x = (length >> 16) | 0x8000;
 						baos.write(x);
 						baos.write(x >> 8);
 						offset += 2;
