@@ -87,10 +87,7 @@ public class StringItems extends ArrayList<StringItem> {
 
 	public void prepare() throws IOException {
 		for (StringItem s : this) {
-			if (s == null) {
-				continue;
-			}
-			if (s.data.length() > 0x7FFF) {
+			if (s != null && s.data.length() > 0x7FFF) {
 				useUTF8 = false;
 			}
 		}
@@ -101,7 +98,8 @@ public class StringItems extends ArrayList<StringItem> {
 		Map<String, Integer> map = new HashMap<String, Integer>();
 		for (StringItem item : this) {
 			if (item == null) {
-				item = new StringItem("empty");
+				i++;
+				continue;
 			}
 			item.index = i++;
 			String stringData = item.data;
@@ -114,27 +112,27 @@ public class StringItems extends ArrayList<StringItem> {
 				if (useUTF8) {
 					int length = stringData.length();
 					byte[] data = stringData.getBytes("UTF-8");
-					int u8lenght = data.length;
+					int u8length = data.length;
 
 					if (length > 0x7F) {
 						offset++;
-						baos.write((length >> 8) | 0x80);
+						baos.write((length >> 8) & 0x80);
 					}
 					baos.write(length);
 
-					if (u8lenght > 0x7F) {
+					if (u8length > 0x7F) {
 						offset++;
-						baos.write((u8lenght >> 8) | 0x80);
+						baos.write((u8length >> 8) & 0x80);
 					}
-					baos.write(u8lenght);
+					baos.write(u8length);
 					baos.write(data);
 					baos.write(0);
-					offset += 3 + u8lenght;
+					offset += 3 + u8length;
 				} else {
 					int length = stringData.length();
 					byte[] data = stringData.getBytes("UTF-16LE");
 					if (length > 0x7FFF) {
-						int x = (length >> 16) | 0x8000;
+						int x = (length >> 16) & 0x8000;
 						baos.write(x);
 						baos.write(x >> 8);
 						offset += 2;
