@@ -267,6 +267,9 @@ public class ArscParser implements ResConst {
             typeNamesX = StringItems.read(in, flags);
             pkg.typeNameXFlags = flags[0];
             in.position(chunk.location + chunk.size);
+            for (int tid = 0; tid < typeNamesX.length; tid ++) {
+                pkg.insertType(tid + 1, typeNamesX[tid]);
+            }
         }
         {
             Chunk chunk = new Chunk();

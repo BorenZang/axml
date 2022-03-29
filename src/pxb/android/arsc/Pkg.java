@@ -39,9 +39,11 @@ public class Pkg {
                 if (type.name == null) {
                     type.name = name;
                 } else if (!name.endsWith(type.name)) {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Name not match. Expect: " + type.name + ". Found: " + name);
                 }
-                if (type.specs.length != entrySize) {
+                if (type.specs.length == 0) {
+                    type.specs = new ResSpec[entrySize];
+                } else if (type.specs.length != entrySize) {
                     throw new RuntimeException();
                 }
             }
@@ -53,6 +55,14 @@ public class Pkg {
             types.put(tid, type);
         }
         return type;
+    }
+
+    public void insertType(int tid, String name) {
+        Type type = new Type();
+        type.id = tid;
+        type.name = name;
+        type.specs = new ResSpec[0];
+        types.put(tid, type);
     }
 
 }

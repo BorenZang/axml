@@ -103,11 +103,6 @@ public class StringItems extends ArrayList<StringItem> {
 		baos.reset();
 		Map<String, Integer> map = new HashMap<String, Integer>();
 		for (StringItem item : this) {
-			if (item == null) {
-				i++;
-				offset += 10;
-				continue;
-			}
 			item.index = i++;
 			String stringData = item.data;
 			Integer of = map.get(stringData);
