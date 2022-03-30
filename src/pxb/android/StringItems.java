@@ -47,25 +47,27 @@ public class StringItems extends ArrayList<StringItem> {
         }
 
         int base = trunkOffset + stringDataOffset;
-        for (int i = 0; i < offsets.length; i++) {
-            in.position(base + offsets[i]);
-            String s;
+		for (int i = 0; i < offsets.length; i++) {
+			in.position(base + offsets[i]);
+			String s;
 
-            if (0 != (flags & UTF8_FLAG)) {
-                u8length(in); // ignored
-                int u8len = u8length(in);
-                int start = in.position();
-                int blength = u8len;
-                while (in.get(start + blength) != 0) {
-                    blength++;
-                }
-                s = new String(in.array(), start, blength, "UTF-8");
-            } else {
-                int length = u16length(in);
-                s = new String(in.array(), in.position(), length * 2, "UTF-16LE");
-            }
-            strings[i] = s;
-        }
+			if (0 != (flags & UTF8_FLAG)) {
+				u8length(in); // ignored
+				int u8len = u8length(in);
+				int start = in.position();
+				int blength = u8len;
+				while (in.get(start + blength) != 0) {
+					blength++;
+				}
+				s = new String(in.array(), start, blength, "UTF-8");
+				in.position(start + blength + 1); // ADD
+			} else {
+				int length = u16length(in);
+				s = new String(in.array(), in.position(), length * 2, "UTF-16LE");
+				in.position(in.position() + (length + 1) * 2); // ADD
+			}
+			strings[i] = s;
+		}
         return strings;
     }
 

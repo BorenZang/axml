@@ -161,10 +161,10 @@ public class ArscWriter implements ResConst {
                     }
 //                    pkgSize += size0;// config
 
-                    if (pkgSize - configBasePostion > 0x0038) {
+                    if (pkgSize - configBasePostion > 0x0040) {
                          throw new RuntimeException("config id  too big");
                     } else {
-                        pkgSize = configBasePostion + 0x0038;
+                        pkgSize = configBasePostion + 0x0040;
                     }
 
                     pkgSize += 4 * config.entryCount;// offset
@@ -326,7 +326,7 @@ public class ArscWriter implements ResConst {
                     if (config.wPosition != typeConfigPosition) {
                         throw new RuntimeException();
                     }
-                    out.putInt(RES_TABLE_TYPE_TYPE | (0x0038 << 16));
+                    out.putInt(RES_TABLE_TYPE_TYPE | (0x0040 << 16));
                     out.putInt(config.wChunkSize);// size
 
                     out.putInt(t.id);
@@ -343,7 +343,7 @@ public class ArscWriter implements ResConst {
                     }
                     out.put(new byte[padding]);
 
-                    out.position(typeConfigPosition + 0x0038);
+                    out.position(typeConfigPosition + 0x0040);
 
                     D("[%08x]write config entry offsets", out.position());
                     for (int i = 0; i < config.entryCount; i++) {
