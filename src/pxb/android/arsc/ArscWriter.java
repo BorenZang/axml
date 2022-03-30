@@ -270,10 +270,10 @@ public class ArscWriter implements ResConst {
             out.position(p + 256);
 
             out.putInt(pctx.typeStringOff);
-            out.putInt(pctx.typeNames0.size());
+            out.putInt(0); // out.putInt(pctx.typeNames0.size());
 
             out.putInt(pctx.keyStringOff);
-            out.putInt(pctx.keyNames0.size());
+            out.putInt(0); // out.putInt(pctx.keyNames0.size());
             out.putInt(0);
 
             {

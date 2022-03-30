@@ -95,8 +95,9 @@ public class StringItems extends ArrayList<StringItem> {
 		prepare(0);
 	}
 
+	private int flags = 0;
 	public void prepare(int flags) throws IOException {
-		useUTF8 = (flags & StringItems.UTF8_FLAG) != 0;
+		this.flags = flags;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int i = 0;
 		int offset = 0;
@@ -111,7 +112,7 @@ public class StringItems extends ArrayList<StringItem> {
 			} else {
 				item.dataOffset = offset;
 				map.put(stringData, offset);
-				if (useUTF8) {
+				if ((flags & StringItems.UTF8_FLAG) != 0) {
 					int length = stringData.length();
 					byte[] data = stringData.getBytes("UTF-8");
 					int u8length = data.length;
@@ -152,19 +153,13 @@ public class StringItems extends ArrayList<StringItem> {
 		stringData = baos.toByteArray();
 	}
 
-	private boolean useUTF8 = true;
-
 	public void write(ByteBuffer out) throws IOException {
 		out.putInt(this.size());
 		out.putInt(0);// TODO style count
-		out.putInt(useUTF8 ? UTF8_FLAG : 0);
+		out.putInt(this.flags);
 		out.putInt(7 * 4 + this.size() * 4);
 		out.putInt(0);
 		for (StringItem item : this) {
-			if (item == null) {
-				out.putInt(0);
-				continue;
-			}
 			out.putInt(item.dataOffset);
 		}
 		out.put(stringData);
